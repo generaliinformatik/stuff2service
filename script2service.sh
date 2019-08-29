@@ -4,6 +4,8 @@
 # (c) 2019 Generali Informatik
 #
 
+### create systemd service from script #########################################
+
 function to_service
 {
   local source=$1
@@ -45,17 +47,28 @@ EOF
   sed -i "s/PLACEHOLDER_SCRIPT/${source_filename//\//\\/}/" $target
 }
 
+### create script from systemd service #########################################
+
+# This is of course only intended to work on services created by the above
+# function (it's like an "undo").
+
 function to_script
 {
   local source=$1
 
+  # extract script name from service
   local target=$(grep "Description=Run script" $source)
   if [[ $target =~ ^Description=Run\ script\ (.*)$ ]]; then
     target=$(dirname $(readlink -f $source))/${BASH_REMATCH[1]}
-  fi
 
-  sed -n '/^###PAYLOAD_BEGIN###/,/^###PAYLOAD_END###/{//!p}' $source | cut -c 2- > $target
+    # put script from comment block into file
+    sed -n '/^###PAYLOAD_BEGIN###/,/^###PAYLOAD_END###/{//!p}' $source | cut -c 2- > $target
+  else
+    echo "error: $source is not a service created by this script"
+  fi
 }
+
+### check argument and decide what to do #######################################
 
 function main
 {
@@ -68,10 +81,15 @@ function main
   esac
 }
 
-### MAIN #######################################################################
+### main #######################################################################
 
 if [ -f "$1" ]; then
   main $1
 else
-  echo "usage: $0 <filename>"
+  echo "usage: $0 <file>"
+  echo ""
+  echo "   Create systemd service file from script <file>."
+  echo "   If <file> is a systemd service created by this script,"
+  echo "   reverse the operation and recreate the original script it."
+  echo ""
 fi
