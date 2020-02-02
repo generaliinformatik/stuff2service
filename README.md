@@ -20,4 +20,4 @@ You need bash.
 
 ## License
 
-[MIT](LICENSE) (c) 2019 Generali Informatik
+[MIT](LICENSE) © 2020 Generali Deutschland Informatik Services GmbH

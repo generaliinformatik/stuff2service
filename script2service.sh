@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # SPDX-License-Identifier: MIT
-# (c) 2019 Generali Informatik
+# (c) 2020 Generali Deutschland Informatik Services GmbH
 #
 
 ### create systemd service from script #########################################
